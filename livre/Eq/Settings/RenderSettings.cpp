@@ -26,7 +26,7 @@ template<> inline void byteswap( livre::RendererType& value )
     { byteswap( reinterpret_cast< uint32_t& >( value )); }
 }
 
-#define N_SAMPLES 512
+#define N_SAMPLES 2048
 
 namespace livre
 {

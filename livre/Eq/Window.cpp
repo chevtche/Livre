@@ -105,7 +105,7 @@ public:
         if( pipe->getFrameData()->getAppParameters()->animationEnabled )
         {
             const Vector2ui& animationFrames = pipe->getFrameData()->getAppParameters()->frames;
-            const uint32_t duration = animationFrames.y() - animationFrames.x();
+            const uint32_t duration = animationFrames.y() - animationFrames.x() + 1;
             renderStatus.setFrameID( animationFrames.x() + ( frameNumber % duration ));
         }
     }

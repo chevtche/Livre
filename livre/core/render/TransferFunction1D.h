@@ -25,118 +25,121 @@
 
 #include <livre/core/api.h>
 #include <livre/core/types.h>
-#include <livre/core/mathTypes.h>
+#include <livre/core/data/VolumeInformation.h>
 
 #define TF_NCHANNELS 4u
 
 namespace livre
 {
 
+enum SamplePointsType
+{
+    UINT8,
+    FLOAT,
+    DEFAULT = FLOAT
+};
+
+class TransferFunction1D;
+typedef boost::shared_ptr< TransferFunction1D > TransferFunction1DPtr;
+
 /**
  * The TransferFunction1D class holds the color and transparency for an RGBA 1 dimensional Transfer Function ( TF ).
  * The data type can be templated by parameter T.
  */
-template< class T  >
 class TransferFunction1D
 {
 public:
     /**
      * Create the transfer function with default parameters.
      */
-    TransferFunction1D() { reset(); }
+    TransferFunction1D();
+
+    virtual ~TransferFunction1D(){}
 
     /**
      * Create a transfer function.
      * @param size The number of samples in the transfer function.
+     * @param type The type of samples. Currenty supported types are uint8_t and floats.
+     * @param nChannels The number of channels. RGBA = 4 channels, RGB = 3 channels, ...
      */
-    explicit TransferFunction1D( const uint32_t size ) { createCustomTF_( size ); }
-
-    /**
-     * Load transfer function from an ASCII "1dt" file. The content of the file
-     * consists of a first line with the number of sample points in the transfer
-     * function and their format, and then all the values in 'R G B A' format.
-     * Currently both float [0.0f, 1.0f] and 8-bit unsigned integers [0, 255]
-     * values are supported. If the format is unspecified, float is used.
-     * If the file extension or format is not supported or the file could not be
-     * opened, a default transfer function is generated.
-     * @param file Path to the transfer function file.
-     */
-    explicit TransferFunction1D( const std::string& file ) { createTfFromFile_( file ); }
+    TransferFunction1D( const uint32_t size, const SamplePointsType type = UINT8, const uint8_t nChannels = 4u );
 
     /**
      * Copy a transfer function.
      * @param tf The transfer function to be copied.
      */
-    explicit TransferFunction1D( const TransferFunction1D< T >& tf )
-        : rgba_( tf.rgba_ )
+    explicit TransferFunction1D( const TransferFunction1D& tf )
+        : _data( tf._data )
+        , _nChannels( tf._nChannels )
+        , _type( tf._type )
     {}
 
     /**
      * Create a transfer function.
      * @param rgba A std::vector with samples of the transfer function.
      */
-    explicit TransferFunction1D( const std::vector< T >& rgba )
-        : rgba_( rgba )
+    explicit TransferFunction1D( const UInt8Vector &data, const SamplePointsType type = UINT8, const uint8_t nChannels = 4u )
+        : _data( data )
+        , _nChannels( nChannels )
+        , _type( type )
     {}
 
-    TransferFunction1D& operator=( const TransferFunction1D< T >& rhs )
+    TransferFunction1D& operator=( const TransferFunction1D& rhs )
     {
         if( this == &rhs )
             return *this;
 
-        rgba_ = rhs.rgba_;
+        _data = rhs._data;
+        _type = rhs._type;
+        _nChannels = rhs._nChannels;
         return *this;
     }
 
     /**
+     * @return The RGBA data vector. The data array is rgba_[] = { R, G, B, A, R, G, B, A, R ... }.
+     */
+    UInt8Vector& getData() { return _data; }
+
+    /**
+     * @return The RGBA data vector. The data array is rgba_[] = { R, G, B, A, R, G, B, A, R ... }.
+     */
+    const UInt8Vector& getData() const { return _data; }
+
+    uint32_t getNumChannels() { return _nChannels; }
+
+    /**
      * Resets the transfer function with default parameters.
      */
-    LIVRECORE_API void reset();
+     LIVRECORE_API virtual void reset() = 0;
 
-    /**
-     * @return The RGBA data vector. The data array is rgba_[] = { R, G, B, A, R, G, B, A, R ... }.
-     */
-    std::vector< T >& getData() { return rgba_; }
+protected:
 
-    /**
-     * @return The RGBA data vector. The data array is rgba_[] = { R, G, B, A, R, G, B, A, R ... }.
-     */
-    const std::vector< T >& getData() const { return rgba_; }
-
-    static uint32_t getNumChannels() { return TF_NCHANNELS; }
+    UInt8Vector _data;
+    uint8_t _nChannels;
+    SamplePointsType _type;
 
 private:
-    std::vector< T > rgba_;
 
-    template <typename U>
-    friend co::DataOStream& operator<<( co::DataOStream& os, const TransferFunction1D< U >& tf );
+    friend co::DataOStream& operator<<( co::DataOStream& os, const TransferFunction1DPtr tf )
+    {
+        return os << tf->getData();
+    }
 
-    template <typename U>
-    friend co::DataIStream& operator>>( co::DataIStream& is, TransferFunction1D< U >& tf );
-
-    LIVRECORE_API void createCustomTF_( const uint32_t size );
-
-    LIVRECORE_API void createTfFromFile_( const std::string& file );
+    friend co::DataIStream& operator>>( co::DataIStream& is, TransferFunction1DPtr tf )
+    {
+        return is >> tf->getData();
+    }
 };
 
-/**
-  * Typedefs for templates
-  */
-typedef TransferFunction1D< uint8_t > TransferFunction1Dc;
-typedef TransferFunction1D< float > TransferFunction1Df;
-typedef boost::shared_ptr< TransferFunction1Df > TransferFunction1DfPtr;
-
-template < class U >
-co::DataOStream& operator<<( co::DataOStream& os,
-                             const TransferFunction1D< U >& tf )
+/*co::DataOStream& operator<<( co::DataOStream& os,
+                             const TransferFunction1DPtr tf )
 {
-    return os << tf.getData();
+    return os << tf->getData();
 }
 
-template < class U >
-co::DataIStream& operator>>( co::DataIStream& is, TransferFunction1D< U >& tf )
+co::DataIStream& operator>>( co::DataIStream& is, TransferFunction1DPtr tf )
 {
-    return is >> tf.getData();
-}
+    return is >> tf->getData();
+}*/
 }
 #endif // _TransferFunction1D_h_

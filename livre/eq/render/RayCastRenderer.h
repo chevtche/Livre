@@ -49,7 +49,7 @@ public:
      * Modifies the transfer function.
      * @param transferFunction Transfer function.
      */
-    void initTransferFunction( const TransferFunction1D< uint8_t >& transferFunction );
+    void initTransferFunction( const TransferFunction1DPtr transferFunction );
 
 private:
     void onFrameStart_( const GLWidget& glWidget,

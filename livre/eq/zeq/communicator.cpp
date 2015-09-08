@@ -25,6 +25,7 @@
 #include <livre/eq/settings/RenderSettings.h>
 #include <livre/lib/configuration/ApplicationParameters.h>
 #include <livre/lib/configuration/RESTParameters.h>
+#include <livre/core/render/TransferFunction1DRaw.h>
 
 #include <lunchbox/clock.h>
 #include <servus/uri.h>
@@ -86,7 +87,7 @@ public:
     void publishLookupTable1D()
     {
         const auto& renderSettings = _config.getFrameData().getRenderSettings();
-        const auto& lut = renderSettings->getTransferFunction().getData();
+        const auto& lut = renderSettings->getTransferFunction()->getData();
         _vwsPublisher->publish( ::zeq::hbp::serializeLookupTable1D( lut ));
         _publisher->publish( ::zeq::hbp::serializeLookupTable1D( lut ) );
     }
@@ -200,8 +201,8 @@ public:
 
     void onLookupTable1D( const ::zeq::Event& event )
     {
-        const TransferFunction1Dc transferFunction(
-            ::zeq::hbp::deserializeLookupTable1D( event ));
+        const TransferFunction1DPtr transferFunction(
+            new TransferFunction1DRaw( ::zeq::hbp::deserializeLookupTable1D( event )));
         auto renderSettings = _config.getFrameData().getRenderSettings();
         renderSettings->setTransferFunction( transferFunction );
         _config.postRedraw();

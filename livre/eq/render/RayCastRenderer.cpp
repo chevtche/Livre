@@ -58,7 +58,7 @@ RayCastRenderer::RayCastRenderer( const uint32_t samples,
     , _nSamples( samples )
     , _transferFunctionTexture( 0 )
 {
-    TransferFunction1D< unsigned char > transferFunction;
+    TransferFunction1DPtr transferFunction;
     initTransferFunction( transferFunction );
 
     _shaders.reset( new GLSLShaders );
@@ -78,9 +78,9 @@ RayCastRenderer::~RayCastRenderer()
 }
 
 void RayCastRenderer::initTransferFunction(
-    const TransferFunction1Dc& transferFunction )
+    const TransferFunction1DPtr transferFunction )
 {
-    assert( transferFunction.getNumChannels() == 4u );
+    assert( transferFunction->getNumChannels() == 4u );
 
     if( _transferFunctionTexture == 0 )
     {
@@ -95,7 +95,7 @@ void RayCastRenderer::initTransferFunction(
     }
     glBindTexture( GL_TEXTURE_1D, _transferFunctionTexture );
 
-    const UInt8Vector& transferFunctionData = transferFunction.getData();
+    const UInt8Vector& transferFunctionData = transferFunction->getData();
     glTexImage1D(  GL_TEXTURE_1D, 0, GL_RGBA, GLsizei(transferFunctionData.size()/4u), 0,
                    GL_RGBA, GL_UNSIGNED_BYTE, &transferFunctionData[ 0 ] );
 }

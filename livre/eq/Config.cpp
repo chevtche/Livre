@@ -31,6 +31,7 @@
 #include <livre/eq/settings/RenderSettings.h>
 #include <livre/core/events/EventMapper.h>
 #include <livre/core/maths/maths.h>
+#include <livre/core/render/TFLoader.h>
 
 #ifdef LIVRE_USE_ZEQ
 #  include <livre/eq/zeq/communicator.h>
@@ -103,6 +104,7 @@ public:
 #endif
     bool redraw;
     Vector2ui dataFrameRange;
+    TFLoader tfLoader;
 };
 
 Config::Config( eq::ServerPtr parent )
@@ -167,7 +169,8 @@ bool Config::init()
     frameSettings->setFrameNumber( params.frames.x( ));
 
     RenderSettingsPtr renderSettings = _impl->framedata.getRenderSettings();
-    const TransferFunction1Dc tf( _impl->framedata.getVRParameters()->transferFunction );
+    const TransferFunction1DPtr tf =
+            _impl->tfLoader.loadFromFile( _impl->framedata.getVRParameters()->transferFunction );
     renderSettings->setTransferFunction( tf );
 
     _impl->framedata.registerObjects();

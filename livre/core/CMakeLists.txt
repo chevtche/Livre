@@ -62,7 +62,10 @@ set(LIVRECORE_HEADERS
   render/TexturePool.h
   render/TexturePoolFactory.h
   render/TextureState.h
+  render/TFLoader.h
   render/TransferFunction1D.h
+  render/TransferFunction1DRaw.h
+  render/TransferFunction1DCP.h
   render/View.h
   util/ThreadClock.h
   visitor/NodeVisitor.h
@@ -108,7 +111,10 @@ set(LIVRECORE_SOURCES
   render/TexturePool.cpp
   render/TexturePoolFactory.cpp
   render/TextureState.cpp
+  render/TFLoader.cpp
   render/TransferFunction1D.cpp
+  render/TransferFunction1DRaw.cpp
+  render/TransferFunction1DCP.cpp
   render/View.cpp
   util/ThreadClock.cpp
   util/Utilities.cpp

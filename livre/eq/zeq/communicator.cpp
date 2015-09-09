@@ -104,6 +104,10 @@ public:
         const uint32_t frameMax =
                 std::min( params.frames.y(), dataFrameRange[ 1 ]);
 
+        std::cout<<"----------------------------------------- PUBLISHING FRAME ------------------------------------"<<std::endl;
+        std::cout<<"frameMin: " << frameMin << " frameMax: " << frameMax << " currentFrame: " <<frameSettings->getFrameNumber() << " delta: " << params.animation <<std::endl;
+        std::cout<<" params.frames.y: " << params.frames.y() << " dataFRameRange: " <<  dataFrameRange[ 1 ] <<std::endl;
+
         const ::zeq::Event& frame = ::zeq::hbp::serializeFrame(
                                         ::zeq::hbp::data::Frame(
                                             frameMin,
@@ -218,6 +222,7 @@ public:
             return;
 
         frameSettings->setFrameNumber( frame.current );
+        std::cout<<"**************************FRAME DELTA: "<< frame.delta <<std::endl;
         params.animation = frame.delta;
         _config.postRedraw();
     }

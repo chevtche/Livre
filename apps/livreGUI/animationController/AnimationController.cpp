@@ -147,9 +147,15 @@ struct AnimationController::Impl
     void play()
     {
         if( _ui.chbxReverse->checkState() == Qt::Checked )
+        {
             _action = AA_PLAY_BACKWARDS;
+            _currentFrame--;
+        }
         else
+        {
             _action = AA_PLAY;
+            _currentFrame++;
+        }
 
         resetControls();
         publishFrame();
@@ -215,6 +221,7 @@ struct AnimationController::Impl
         {
             const ::zeq::hbp::data::Frame frame(
                         _startFrame, _currentFrame, _endFrame, getDeltaFromAction());
+            std::cout<<"**************************IN PUBLISH: "<< frame.delta <<std::endl;
             _controller.publish( servus::URI( _ui.leURI->text().toStdString()),
                                  ::zeq::hbp::serializeFrame( frame ));
         }

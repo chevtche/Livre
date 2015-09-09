@@ -199,8 +199,9 @@ uint32_t Config::frame()
                                         _impl->dataFrameRange[ 1 ]);
 
     const uint32_t start = frameMin;
-    const uint32_t current = frameSettings->getFrameNumber() > start ?
-                             frameSettings->getFrameNumber() : start;
+    uint32_t current = frameSettings->getFrameNumber() > start ?
+                       frameSettings->getFrameNumber() : start;
+    std::cout<<"CURRENT-1: "<<current <<" frameSettings->getFrameNumber() "<< frameSettings->getFrameNumber() << " start: "<< start <<std::endl;
 
     frameSettings->setFrameNumber( current );
     const eq::uint128_t& version = _impl->framedata.commit();
@@ -208,12 +209,20 @@ uint32_t Config::frame()
     // reset data and advance current frame
     frameSettings->setGrabFrame( false );
     uint32_t end = frameMax > current ? frameMax : current;
+    std::cout<<"CURRENT-2: "<<current<<std::endl;
 
     const int32_t delta = params.animation;
     // avoid overflow condition:
     const uint32_t interval = end-start == 0xFFFFFFFFu ?
                                   0xFFFFFFFFu : end - start + 1;
+    //This check is needed because in the lines below (current-start+delta) become
+    //become 4294967295 instead of -1
+    if(( current - start == 0 ) && ( delta < 0 ))
+        current = end;
+
     const uint32_t frameNumber = ((current-start+delta) % interval) + start;
+    std::cout<< "Before %: " << (current-start+delta) <<std::endl;
+    std::cout<< "((" << current << " - " << start << " + " << delta <<") % " << interval <<" ) + " <<start << " = "<< frameNumber <<std::endl;
     frameSettings->setFrameNumber( frameNumber );
 
     _impl->redraw = false;

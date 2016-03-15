@@ -169,11 +169,11 @@ private:
         _requests[::zeq::hbp::EVENT_IMAGEJPEG] = [&]
             { return requestImageJPEG(); };
         _requests[::zeq::vocabulary::EVENT_EXIT] = [&]{ return requestExit(); };
-        _requests[ VolumeRendererParameters::TYPE_IDENTIFIER() ] = [&]
+        _requests[ _getFrameData().getVRParameters().getTypeIdentifier( )] = [&]
             { return _publisher.publish( _getFrameData().getVRParameters( )); };
-        _requests[ ::zerobuf::render::Camera::TYPE_IDENTIFIER( )] = [&]
+        _requests[ _getFrameData().getCameraSettings().getTypeIdentifier( )] = [&]
             { return _publisher.publish( _getFrameData().getCameraSettings());};
-        _requests[ ::zerobuf::render::LookupTable1D::TYPE_IDENTIFIER( )] = [&]
+        _requests[ _getRenderSettings().getTransferFunction().getTypeIdentifier( )] = [&]
             {
                 return _publisher.publish(
                     _getRenderSettings().getTransferFunction( ));

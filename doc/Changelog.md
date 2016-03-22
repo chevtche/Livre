@@ -2,6 +2,9 @@ Changelog {#Changelog}
 =========
 
 # master {#master}
+* [#265](https://github.com/BlueBrain/Livre/pull/265):
+  Livre uses the following ZeroBuf events: LookOut, imageJPEG, Frame,
+  VolumeRendererParameters, LookupTable1D.
 
 # Release 0.5 (2016-04-06) {#Release050}
 

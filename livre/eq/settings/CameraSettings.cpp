@@ -76,9 +76,9 @@ void CameraSettings::setCameraPosition( const Vector3f& pos )
 
 void CameraSettings::setCameraLookAt( const Vector3f& lookAt )
 {
-    Vector3f eye( (float)getMatrix()[12],
-                  (float)getMatrix()[13],
-                  (float)getMatrix()[14]);
+    const Vector3f eye( (float)getMatrix()[12],
+                        (float)getMatrix()[13],
+                        (float)getMatrix()[14]);
     const Vector3f zAxis = vmml::normalize( eye - lookAt );
 
     // Avoid Gimbal lock effect when looking upwards/downwards
@@ -93,26 +93,11 @@ void CameraSettings::setCameraLookAt( const Vector3f& lookAt )
         up.normalize();
     }
 
-    const Vector3f xAxis = vmml::normalize( vmml::cross( up, zAxis ));
-    const Vector3f yAxis = vmml::cross( zAxis, xAxis );
-
-    Matrix3f rotationMatrix = Matrix4f::IDENTITY;
-    rotationMatrix.set_column( 0, xAxis );
-    rotationMatrix.set_column( 1, yAxis );
-    rotationMatrix.set_column( 2, zAxis );
-
-    Matrix4f rotationTranspose = Matrix4f::IDENTITY;
-    rotationTranspose.set_sub_matrix( rotationMatrix, 0, 0 );
-    rotationTranspose = transpose( rotationTranspose );
-
-    Matrix4f modelview = Matrix4f::IDENTITY;
-    modelview.set_translation( -eye );
-    modelview = rotationTranspose * modelview;
-
+    Matrix4f modelview( eye, lookAt, up );
     std::copy( &modelview.array[0], &modelview.array[0] + 16, getMatrix( ));
 }
 
-Matrix4f CameraSettings::computeMatrix() const
+Matrix4f CameraSettings::computeModelViewMatrix() const
 {
     float matrixValues[16];
     std::copy( getMatrix(), getMatrix() + 16, matrixValues );

@@ -119,7 +119,7 @@ public:
     {
         const CameraSettings& cameraSettings =
             getFrameData()->getCameraSettings();
-        return _channel->getHeadTransform() * cameraSettings.computeMatrix();
+        return _channel->getHeadTransform() * cameraSettings.computeModelViewMatrix();
     }
 
     void clearViewport( const eq::PixelViewport &pvp )
@@ -315,7 +315,7 @@ public:
     {
         const CameraSettings& cameraSettings =
             getFrameData()->getCameraSettings();
-        glMultMatrixf( cameraSettings.computeMatrix().array );
+        glMultMatrixf( cameraSettings.computeModelViewMatrix().array );
     }
 
     void configInit()
@@ -600,7 +600,7 @@ Channel::Channel( eq::Window* parent )
 }
 
 Channel::~Channel()
-{    
+{
 }
 
 bool Channel::configInit( const eq::uint128_t& initId )
